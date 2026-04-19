@@ -2,8 +2,9 @@ package userservice
 
 import (
 	"fmt"
-	"gameapp/entity"
-	"gameapp/pkg/phonenumber"
+
+	"github.com/sahar-mirtalebi/quiz-battle/entity"
+	"github.com/sahar-mirtalebi/quiz-battle/pkg/phonenumber"
 
 	"golang.org/x/crypto/bcrypt"
 )

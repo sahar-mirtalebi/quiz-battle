@@ -1,4 +1,4 @@
-module gameapp
+module github.com/sahar-mirtalebi/quiz-battle
 
 go 1.25.1
 

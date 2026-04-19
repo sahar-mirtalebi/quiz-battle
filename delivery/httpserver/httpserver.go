@@ -2,9 +2,10 @@ package httpserver
 
 import (
 	"fmt"
-	"gameapp/config"
-	"gameapp/service/authservice"
-	"gameapp/service/userservice"
+
+	"github.com/sahar-mirtalebi/quiz-battle/config"
+	"github.com/sahar-mirtalebi/quiz-battle/service/authservice"
+	"github.com/sahar-mirtalebi/quiz-battle/service/userservice"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -3,7 +3,8 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"gameapp/entity"
+
+	"github.com/sahar-mirtalebi/quiz-battle/entity"
 )
 
 func (d *MysqlDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
