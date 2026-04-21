@@ -42,6 +42,10 @@ func main() {
 		},
 	}
 
+	// TODO - add command for migration
+	// migrator := migrator.New(cfg.Mysql)
+	// migrator.Up()
+
 	authSvc, userSvc := setupServices(cfg)
 
 	server := httpserver.New(cfg, authSvc, userSvc)

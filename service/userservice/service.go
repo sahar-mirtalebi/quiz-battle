@@ -5,6 +5,7 @@ import (
 
 	"github.com/sahar-mirtalebi/quiz-battle/entity"
 	"github.com/sahar-mirtalebi/quiz-battle/pkg/phonenumber"
+	"github.com/sahar-mirtalebi/quiz-battle/pkg/richerror"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -114,10 +115,11 @@ type LoginResponse struct {
 }
 
 func (s Service) Login(req LoginRequest) (LoginResponse, error) {
+	const op = "userservice.Login"
 	// TODO - it would be better to use two seperate method for existance check and GetUserByPhoneNumber
 	user, exist, err := s.Repo.GetUserByPhoneNumber(req.PhoneNumber)
 	if err != nil {
-		return LoginResponse{}, fmt.Errorf("unexpected error: %w", err)
+		return LoginResponse{}, richerror.New(op).WithKind(richerror.KindUnexpected)
 	}
 
 	if !exist {
@@ -161,13 +163,11 @@ type ProfileResponse struct {
 }
 
 func (s Service) Profile(req ProfileRequest) (ProfileResponse, error) {
+	const op = "userservice.Profile"
+
 	user, err := s.Repo.GetUserByID(req.UserID)
 	if err != nil {
-		// I don`t have expect the repo call return "record not found",
-		// because I assume the intractor input issanitized
-
-		// TODO - we can use Rich Error
-		return ProfileResponse{}, fmt.Errorf("unexpected error: %w", err)
+		return ProfileResponse{}, richerror.New(op).WithError(err).Withmeta(map[string]interface{}{"req": req})
 	}
 	return ProfileResponse{Name: user.Name}, nil
 }

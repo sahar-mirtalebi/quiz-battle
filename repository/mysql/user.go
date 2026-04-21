@@ -3,8 +3,11 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/sahar-mirtalebi/quiz-battle/entity"
+	"github.com/sahar-mirtalebi/quiz-battle/pkg/errormessage"
+	"github.com/sahar-mirtalebi/quiz-battle/pkg/richerror"
 )
 
 func (d *MysqlDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
@@ -22,6 +25,7 @@ func (d *MysqlDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
 }
 
 func (d *MysqlDB) Register(user entity.User) (entity.User, error) {
+
 	result, err := d.db.Exec(`INSERT INTO users(name, phone_number, password) VALUES(?, ?, ?)`, user.Name, user.PhoneNumber, user.HashedPassword)
 	if err != nil {
 		return entity.User{}, fmt.Errorf("can`t execute command: %w", err)
@@ -36,6 +40,7 @@ func (d *MysqlDB) Register(user entity.User) (entity.User, error) {
 }
 
 func (d *MysqlDB) GetUserByPhoneNumber(phoneNumber string) (entity.User, bool, error) {
+	const op = "mysql.GetUserByPhoneNumber"
 	row := d.db.QueryRow(`SELECT * FROM users WHERE phone_number= ?`, phoneNumber)
 	user, err := scanUser(row)
 	if err != nil {
@@ -43,7 +48,10 @@ func (d *MysqlDB) GetUserByPhoneNumber(phoneNumber string) (entity.User, bool, e
 			return entity.User{}, false, nil
 		}
 
-		return entity.User{}, false, fmt.Errorf("can`t scan query result %w", err)
+		return entity.User{}, false, richerror.New(op).
+			WithError(err).
+			WithMessage("can`t scan query result").
+			WithKind(richerror.KindUnexpected)
 	}
 
 	return user, true, nil
@@ -51,14 +59,23 @@ func (d *MysqlDB) GetUserByPhoneNumber(phoneNumber string) (entity.User, bool, e
 }
 
 func (d *MysqlDB) GetUserByID(userID uint) (entity.User, error) {
+	const op = "mysql.GetUserByPhoneNumber"
 	row := d.db.QueryRow(`SELECT * FROM users WHERE id= ?`, userID)
 	user, err := scanUser(row)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return entity.User{}, fmt.Errorf("record not found")
+			return entity.User{}, richerror.New(op).
+				WithError(err).
+				WithMessage(errormessage.ErrorMsgNotFound).
+				WithKind(richerror.KindNotFound)
+
 		}
 
-		return entity.User{}, fmt.Errorf("can`t scan query result %w", err)
+		return entity.User{}, richerror.New(op).
+			WithError(err).
+			WithMessage(errormessage.ErrorMsgCantScanQueryResult).
+			WithKind(richerror.KindUnexpected)
+
 	}
 
 	return user, nil
@@ -67,8 +84,8 @@ func (d *MysqlDB) GetUserByID(userID uint) (entity.User, error) {
 
 func scanUser(row *sql.Row) (entity.User, error) {
 	user := entity.User{}
-	var createdAt []uint8
-	err := row.Scan(&user.ID, &user.Name, &user.PhoneNumber, &user.HashedPassword, &createdAt)
+	var createdAt time.Time
+	err := row.Scan(&user.ID, &user.Name, &user.PhoneNumber, &createdAt, &user.HashedPassword)
 
 	return user, err
 }

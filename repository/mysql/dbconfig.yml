@@ -3,3 +3,5 @@ production:
   datasource: gameapp:gameappt0lk2o20@(localhost:3306)/gameapp_db?parseTime=true
   dir: repository/mysql/migrations
   table: migrations
+
+
