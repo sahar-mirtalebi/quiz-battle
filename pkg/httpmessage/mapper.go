@@ -9,7 +9,7 @@ import (
 
 func Error(err error) (string, int) {
 	switch err.(type) {
-	case richerror.RichError:
+	case *richerror.RichError:
 		re := err.(richerror.RichError)
 		msg := re.Message()
 		code := mapKindToHttpStatusCode(re.Kind())

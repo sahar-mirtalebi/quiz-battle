@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/sahar-mirtalebi/quiz-battle/entity"
@@ -11,6 +10,7 @@ import (
 )
 
 func (d *MysqlDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
+	const op = "mysql.IsPhoneNumberUnique"
 	row := d.db.QueryRow(`SELECT * FROM users WHERE phone_number= ?`, phoneNumber)
 	_, err := scanUser(row)
 	if err != nil {
@@ -18,17 +18,25 @@ func (d *MysqlDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
 			return true, nil
 		}
 
-		return false, fmt.Errorf("can`t scan query result %w", err)
+		return false, richerror.New(op).
+			WithError(err).
+			WithMessage(errormessage.ErrorMsgCantScanQueryResult).
+			WithKind(richerror.KindUnexpected)
 	}
 
 	return false, nil
 }
 
 func (d *MysqlDB) Register(user entity.User) (entity.User, error) {
+	const op = "mysql.Register"
 
 	result, err := d.db.Exec(`INSERT INTO users(name, phone_number, password) VALUES(?, ?, ?)`, user.Name, user.PhoneNumber, user.HashedPassword)
 	if err != nil {
-		return entity.User{}, fmt.Errorf("can`t execute command: %w", err)
+
+		return entity.User{}, richerror.New(op).
+			WithError(err).
+			WithMessage("can`t execute command").
+			WithKind(richerror.KindUnexpected)
 	}
 
 	// error is always nil
@@ -50,7 +58,7 @@ func (d *MysqlDB) GetUserByPhoneNumber(phoneNumber string) (entity.User, bool, e
 
 		return entity.User{}, false, richerror.New(op).
 			WithError(err).
-			WithMessage("can`t scan query result").
+			WithMessage(errormessage.ErrorMsgCantScanQueryResult).
 			WithKind(richerror.KindUnexpected)
 	}
 
