@@ -9,6 +9,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/repository/mysql"
 	"github.com/sahar-mirtalebi/quiz-battle/service/authservice"
 	"github.com/sahar-mirtalebi/quiz-battle/service/userservice"
+	"github.com/sahar-mirtalebi/quiz-battle/validator/uservalidator"
 )
 
 const (
@@ -46,18 +47,20 @@ func main() {
 	// migrator := migrator.New(cfg.Mysql)
 	// migrator.Up()
 
-	authSvc, userSvc := setupServices(cfg)
+	authSvc, userSvc, userValidator := setupServices(cfg)
 
-	server := httpserver.New(cfg, authSvc, userSvc)
+	server := httpserver.New(cfg, authSvc, userSvc, userValidator)
 
 	server.Serve()
 
 }
 
-func setupServices(cfg config.Config) (authservice.Service, userservice.Service) {
+func setupServices(cfg config.Config) (authservice.Service, userservice.Service, uservalidator.Validator) {
 	authSvc := authservice.New(cfg.Auth)
 	repo := mysql.New(cfg.Mysql)
 	userSvc := userservice.New(repo, authSvc)
 
-	return authSvc, userSvc
+	userValidator := uservalidator.New(repo)
+
+	return authSvc, userSvc, userValidator
 }
