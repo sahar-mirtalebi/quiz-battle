@@ -23,40 +23,23 @@ const (
 func main() {
 	fmt.Println("start echo server")
 
-	cfg := config.Config{
-		Auth: authservice.Config{
-			SignKey:               JwtSignKey,
-			AccessExpirationTime:  AccessExpirationTime,
-			RefreshExpirationTime: RefreshExpirationTime,
-			AccessSubject:         AccessSubject,
-			RefreshSubject:        RefreshSubject,
-		},
-		HTTPConfig: config.HTTPConfig{
-			Port: 8080,
-		},
-		Mysql: mysql.Config{
-			Username: "gameapp",
-			Password: "gameappt0lk2o20",
-			Host:     "localhost",
-			Port:     3306,
-			DBName:   "gameapp_db",
-		},
-	}
+	cfg := config.Load()
+	fmt.Printf("cfg : %+v\n", cfg)
 
 	// TODO - add command for migration
 	// migrator := migrator.New(cfg.Mysql)
 	// migrator.Up()
 
-	authSvc, userSvc, userValidator := setupServices(cfg)
+	authSvc, userSvc, userValidator := setupServices(*cfg)
 
-	server := httpserver.New(cfg, authSvc, userSvc, userValidator)
+	server := httpserver.New(*cfg, authSvc, userSvc, userValidator)
 
 	server.Serve()
 
 }
 
 func setupServices(cfg config.Config) (authservice.Service, userservice.Service, uservalidator.Validator) {
-	authSvc := authservice.New(cfg.Auth)
+	authSvc := authservice.New(cfg.JWT)
 	repo := mysql.New(cfg.Mysql)
 	userSvc := userservice.New(repo, authSvc)
 

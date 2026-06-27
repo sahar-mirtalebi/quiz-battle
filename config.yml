@@ -1,0 +1,16 @@
+jwt:
+  sign_key: ${JWT_SIGN_KEY}
+  access_subject: AT
+  refresh_subject: RT
+  access_expiration_time: 24h
+  refresh_expiration_time: 168h
+
+http_config:
+  port: 8080
+
+mysql:
+  username: ${MYSQL_USERNAME}
+  password: ${MYSQL_PASSWORD}
+  host: localhost
+  port: 3306
+  db_name: gameapp_db
