@@ -13,14 +13,14 @@ import (
 	"github.com/knadh/koanf/providers/env/v2"
 )
 
-func Load() *Config {
+func Load(configPath string) *Config {
 	var k = koanf.New(".")
 
 	_ = godotenv.Load()
 
 	k.Load(confmap.Provider(defaultConfig, "."), nil)
 
-	b, err := os.ReadFile("config.yml")
+	b, err := os.ReadFile(configPath)
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ func Load() *Config {
 	k.Load(env.Provider(".", env.Opt{
 		Prefix: "GAMEAPP_",
 		TransformFunc: func(k, v string) (string, any) {
-			k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, "GAMEAPP_")), "__", ".")
+			k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, "GAMEAPP_")), "_", ".")
 
 			return k, v
 		},

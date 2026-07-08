@@ -16,12 +16,7 @@ type Config struct {
 	DBName   string `koanf:"db_name"`
 }
 
-type MysqlDB struct {
-	config Config
-	db     *sql.DB
-}
-
-func New(cfg Config) *MysqlDB {
+func New(cfg Config) *sql.DB {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName))
 	if err != nil {
 		panic(fmt.Errorf("mysql open err: %v", err))
@@ -32,5 +27,5 @@ func New(cfg Config) *MysqlDB {
 	db.SetMaxIdleConns(10)
 
 	db.Ping()
-	return &MysqlDB{db: db, config: cfg}
+	return db
 }

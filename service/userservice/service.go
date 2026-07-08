@@ -11,8 +11,8 @@ type Repository interface {
 }
 
 type AuthService interface {
-	CreateAccessToken(userID uint) (string, error)
-	CreateRefreshToken(userID uint) (string, error)
+	CreateAccessToken(userID uint, role entity.Role) (string, error)
+	CreateRefreshToken(userID uint, role entity.Role) (string, error)
 }
 
 type Service struct {
@@ -22,4 +22,13 @@ type Service struct {
 
 func New(repo Repository, auth AuthService) Service {
 	return Service{Repo: repo, Auth: auth}
+}
+
+func (s Service) GetUserRole(userID uint) (entity.Role, error) {
+	user, err := s.Repo.GetUserByID(userID)
+	if err != nil {
+		return 0, err
+	}
+
+	return user.Role, nil
 }

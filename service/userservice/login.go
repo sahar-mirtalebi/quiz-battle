@@ -21,12 +21,12 @@ func (s Service) Login(req param.LoginRequest) (param.LoginResponse, error) {
 		return param.LoginResponse{}, fmt.Errorf("phone number or password is not correct")
 	}
 
-	accessToken, err := s.Auth.CreateAccessToken(user.ID)
+	accessToken, err := s.Auth.CreateAccessToken(user.ID, user.Role)
 	if err != nil {
 		return param.LoginResponse{}, fmt.Errorf("unexpected error: %w", err)
 	}
 
-	refreshToken, err := s.Auth.CreateRefreshToken(user.ID)
+	refreshToken, err := s.Auth.CreateRefreshToken(user.ID, user.Role)
 	if err != nil {
 		return param.LoginResponse{}, fmt.Errorf("unexpected error: %w", err)
 	}

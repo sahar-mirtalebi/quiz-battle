@@ -2,10 +2,10 @@ package authservice
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/sahar-mirtalebi/quiz-battle/entity"
 )
 
 type Config struct {
@@ -17,62 +17,45 @@ type Config struct {
 }
 
 type Service struct {
-	config Config
+	Config Config
 }
 
 func New(cfg Config) Service {
 	return Service{
-		config: cfg,
+		Config: cfg,
 	}
 }
 
 type Claims struct {
 	jwt.RegisteredClaims
-	UserID  uint   `json:"user_id"`
-	Subject string `json:"subject"`
+	UserID uint        `json:"user_id"`
+	Role   entity.Role `json:"role"`
 }
 
-func (s Service) CreateAccessToken(userID uint) (string, error) {
+func (s Service) CreateAccessToken(userID uint, role entity.Role) (string, error) {
 
-	return s.CreateToken(userID, s.config.AccessExpirationTime, s.config.AccessSubject)
+	return s.CreateToken(userID, role, s.Config.AccessExpirationTime, s.Config.AccessSubject)
 }
 
-func (s Service) CreateRefreshToken(userID uint) (string, error) {
+func (s Service) CreateRefreshToken(userID uint, role entity.Role) (string, error) {
 
-	return s.CreateToken(userID, s.config.RefreshExpirationTime, s.config.RefreshSubject)
+	return s.CreateToken(userID, role, s.Config.RefreshExpirationTime, s.Config.RefreshSubject)
 }
 
-func (s Service) ParseJWT(bearerToken []string) (*Claims, error) {
-	tokenstr := strings.Split(bearerToken[0], " ")[1]
-
-	token, err := jwt.ParseWithClaims(tokenstr, &Claims{}, func(t *jwt.Token) (any, error) {
-		return []byte(s.config.SignKey), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-		fmt.Printf("userID : %v, expiration : %v", claims.UserID, claims.RegisteredClaims.ExpiresAt)
-		return claims, nil
-	} else {
-		return nil, err
-	}
-
-}
-
-func (s Service) CreateToken(userID uint, expirationTime time.Duration, subject string) (string, error) {
+func (s Service) CreateToken(userID uint, role entity.Role, expirationTime time.Duration, subject string) (string, error) {
 	claims := &Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
+			Subject:   subject,
 		},
-		Subject: subject,
-		UserID:  userID,
+
+		UserID: userID,
+		Role:   role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString([]byte(s.config.SignKey))
+	tokenString, err := token.SignedString([]byte(s.Config.SignKey))
 	if err != nil {
 		return "", fmt.Errorf("unexpected error %w", err)
 	}
