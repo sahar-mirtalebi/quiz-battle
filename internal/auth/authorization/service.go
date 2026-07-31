@@ -2,12 +2,14 @@
 package authorizationservice
 
 import (
+	"context"
+
 	authdomain "github.com/sahar-mirtalebi/quiz-battle/internal/auth/domain"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
 type AccessControlRepository interface {
-	GetUserPermissions(userID uint, role userdomain.Role) ([]authdomain.PermissionTitle, error)
+	GetUserPermissions(ctx context.Context, userID uint, role userdomain.Role) ([]authdomain.PermissionTitle, error)
 }
 
 type Service struct {
@@ -20,8 +22,8 @@ func New(accessControlRepo AccessControlRepository) Service {
 	}
 }
 
-func (s Service) CheckAccess(userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error) {
-	userPermissions, err := s.accessControlRepo.GetUserPermissions(userID, role)
+func (s Service) CheckAccess(ctx context.Context, userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error) {
+	userPermissions, err := s.accessControlRepo.GetUserPermissions(ctx, userID, role)
 	if err != nil {
 		return false, err
 	}

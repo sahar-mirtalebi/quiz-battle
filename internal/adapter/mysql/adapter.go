@@ -2,6 +2,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -17,7 +18,7 @@ type Config struct {
 	DBName   string `koanf:"db_name"`
 }
 
-func New(cfg Config) *sql.DB {
+func New(ctx context.Context, cfg Config) *sql.DB {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName))
 	if err != nil {
 		panic(fmt.Errorf("mysql open err: %v", err))
@@ -27,7 +28,7 @@ func New(cfg Config) *sql.DB {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 
-	if err := db.Ping(); err != nil {
+	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
 		panic(fmt.Errorf("mysql connection failed: %w", err))
 	}

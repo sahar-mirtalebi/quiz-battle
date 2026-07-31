@@ -1,6 +1,7 @@
 package userservice
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
@@ -8,10 +9,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s Service) Login(req param.LoginRequest) (param.LoginResponse, error) {
+func (s Service) Login(ctx context.Context, req param.LoginRequest) (param.LoginResponse, error) {
 
 	// TODO - it would be better to use two seperate method for existance check and GetUserByPhoneNumber
-	user, err := s.Repo.GetUserByPhoneNumber(req.PhoneNumber)
+	user, err := s.Repo.GetUserByPhoneNumber(ctx, req.PhoneNumber)
 	if err != nil {
 		return param.LoginResponse{}, richerror.New().WithError(err)
 	}

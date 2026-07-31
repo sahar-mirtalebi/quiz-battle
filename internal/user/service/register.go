@@ -1,6 +1,7 @@
 package userservice
 
 import (
+	"context"
 	"fmt"
 
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
@@ -8,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s Service) Register(req param.RegisterRequest) (param.RegisterResponse, error) {
+func (s Service) Register(ctx context.Context, req param.RegisterRequest) (param.RegisterResponse, error) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -22,7 +23,7 @@ func (s Service) Register(req param.RegisterRequest) (param.RegisterResponse, er
 		Role:           userdomain.UserRole,
 	}
 
-	createdUser, err := s.Repo.Register(user)
+	createdUser, err := s.Repo.Register(ctx, user)
 	if err != nil {
 		return param.RegisterResponse{}, fmt.Errorf("unexpected error: %w", err)
 	}

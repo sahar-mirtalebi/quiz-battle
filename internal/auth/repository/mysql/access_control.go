@@ -1,14 +1,16 @@
 package accesscontrolrepo
 
 import (
+	"context"
+
 	authdomain "github.com/sahar-mirtalebi/quiz-battle/internal/auth/domain"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/errormessage"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
-func (d *AccessControlDB) GetUserPermissions(userID uint, role userdomain.Role) ([]authdomain.PermissionTitle, error) {
-	rows, err := d.db.Query(`
+func (d *AccessControlDB) GetUserPermissions(ctx context.Context, userID uint, role userdomain.Role) ([]authdomain.PermissionTitle, error) {
+	rows, err := d.db.QueryContext(ctx, `
 	SELECT DISTINCT p.title
 	FROM access_controls ac
 	JOIN permissions p ON p.id = ac.permission_id

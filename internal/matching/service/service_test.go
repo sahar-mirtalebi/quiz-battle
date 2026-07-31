@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
+	param "github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 )
 
@@ -14,7 +14,7 @@ type matchingRepoStub struct {
 	category quizdomain.Category
 }
 
-func (r *matchingRepoStub) AddToWaitingList(_ context.Context, userID uint, category quizdomain.Category, _ time.Time) error {
+func (r *matchingRepoStub) AddToWaitingList(_ context.Context, userID uint, category quizdomain.Category) error {
 	r.userID = userID
 	r.category = category
 	return nil

@@ -10,13 +10,15 @@ import (
 )
 
 func (h Handler) userLogin(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	var req param.LoginRequest
 	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	fieldError, err := h.userValidator.ValidateLoginRequest(req)
+	fieldError, err := h.userValidator.ValidateLoginRequest(ctx, req)
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return c.JSON(code, echo.Map{
@@ -25,7 +27,7 @@ func (h Handler) userLogin(c echo.Context) error {
 		})
 	}
 
-	resp, err := h.userSvc.Login(req)
+	resp, err := h.userSvc.Login(ctx, req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

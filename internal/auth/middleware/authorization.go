@@ -2,6 +2,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -11,7 +12,7 @@ import (
 )
 
 type AuthorizationService interface {
-	CheckAccess(userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error)
+	CheckAccess(ctx context.Context, userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error)
 }
 
 func Authorization(authzSvc AuthorizationService, permissions ...authdomain.PermissionTitle) echo.MiddlewareFunc {
@@ -37,7 +38,7 @@ func Authorization(authzSvc AuthorizationService, permissions ...authdomain.Perm
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing role")
 			}
 
-			allowed, err := authzSvc.CheckAccess(uint(userIDFloat), userdomain.Role(roleFloat), permissions)
+			allowed, err := authzSvc.CheckAccess(c.Request().Context(), uint(userIDFloat), userdomain.Role(roleFloat), permissions)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError)
 			}

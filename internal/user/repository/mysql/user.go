@@ -1,6 +1,7 @@
 package userrepo
 
 import (
+	"context"
 	"database/sql"
 	"time"
 
@@ -9,9 +10,9 @@ import (
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
-func (d *UserDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
+func (d *UserDB) IsPhoneNumberUnique(ctx context.Context, phoneNumber string) (bool, error) {
 
-	row := d.db.QueryRow(`
+	row := d.db.QueryRowContext(ctx, `
 	SELECT id, name, phone_number, created_at, password, role
 	FROM users
 	WHERE phone_number= ?`, phoneNumber)
@@ -30,9 +31,9 @@ func (d *UserDB) IsPhoneNumberUnique(phoneNumber string) (bool, error) {
 	return false, nil
 }
 
-func (d *UserDB) Register(user userdomain.User) (userdomain.User, error) {
+func (d *UserDB) Register(ctx context.Context, user userdomain.User) (userdomain.User, error) {
 
-	result, err := d.db.Exec(`INSERT INTO users(name, phone_number, password, role) VALUES(?, ?, ?, ?)`, user.Name, user.PhoneNumber, user.HashedPassword, user.Role.String())
+	result, err := d.db.ExecContext(ctx, `INSERT INTO users(name, phone_number, password, role) VALUES(?, ?, ?, ?)`, user.Name, user.PhoneNumber, user.HashedPassword, user.Role.String())
 	if err != nil {
 
 		return userdomain.User{}, richerror.New().
@@ -54,8 +55,8 @@ func (d *UserDB) Register(user userdomain.User) (userdomain.User, error) {
 	return user, nil
 }
 
-func (d *UserDB) ListAll() ([]userdomain.User, error) {
-	rows, err := d.db.Query(`
+func (d *UserDB) ListAll(ctx context.Context) ([]userdomain.User, error) {
+	rows, err := d.db.QueryContext(ctx, `
 		SELECT id, name, phone_number, created_at, password, role
 		FROM users
 		ORDER BY id DESC`)
@@ -83,9 +84,9 @@ func (d *UserDB) ListAll() ([]userdomain.User, error) {
 	return users, nil
 }
 
-func (d *UserDB) GetUserByPhoneNumber(phoneNumber string) (userdomain.User, error) {
+func (d *UserDB) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (userdomain.User, error) {
 
-	row := d.db.QueryRow(`
+	row := d.db.QueryRowContext(ctx, `
 	SELECT id, name, phone_number, created_at, password, role
 	FROM users
 	WHERE phone_number= ?`, phoneNumber)
@@ -111,9 +112,9 @@ func (d *UserDB) GetUserByPhoneNumber(phoneNumber string) (userdomain.User, erro
 
 }
 
-func (d *UserDB) GetUserByID(userID uint) (userdomain.User, error) {
+func (d *UserDB) GetUserByID(ctx context.Context, userID uint) (userdomain.User, error) {
 
-	row := d.db.QueryRow(`
+	row := d.db.QueryRowContext(ctx, `
 	SELECT id, name, phone_number, created_at, password, role
 	FROM users
 	WHERE id = ?

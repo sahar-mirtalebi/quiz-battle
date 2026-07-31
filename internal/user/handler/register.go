@@ -10,13 +10,15 @@ import (
 )
 
 func (h Handler) userRegister(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	var req param.RegisterRequest
 	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	fieldError, err := h.userValidator.ValidateRegisterRequest(req)
+	fieldError, err := h.userValidator.ValidateRegisterRequest(ctx, req)
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return c.JSON(code, echo.Map{
@@ -25,7 +27,7 @@ func (h Handler) userRegister(c echo.Context) error {
 		})
 	}
 
-	resp, err := h.userSvc.Register(req)
+	resp, err := h.userSvc.Register(ctx, req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

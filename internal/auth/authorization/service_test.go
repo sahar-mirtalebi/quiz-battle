@@ -1,6 +1,7 @@
 package authorizationservice
 
 import (
+	"context"
 	"testing"
 
 	authdomain "github.com/sahar-mirtalebi/quiz-battle/internal/auth/domain"
@@ -11,14 +12,14 @@ type accessRepoStub struct {
 	permissions []authdomain.PermissionTitle
 }
 
-func (r accessRepoStub) GetUserPermissions(uint, userdomain.Role) ([]authdomain.PermissionTitle, error) {
+func (r accessRepoStub) GetUserPermissions(context.Context, uint, userdomain.Role) ([]authdomain.PermissionTitle, error) {
 	return r.permissions, nil
 }
 
 func TestCheckAccessRequiresAllPermissions(t *testing.T) {
 	service := New(accessRepoStub{permissions: []authdomain.PermissionTitle{authdomain.UserListPermission}})
 
-	allowed, err := service.CheckAccess(1, userdomain.AdminRole, []authdomain.PermissionTitle{
+	allowed, err := service.CheckAccess(context.Background(), 1, userdomain.AdminRole, []authdomain.PermissionTitle{
 		authdomain.UserListPermission,
 		authdomain.UserDeletePermission,
 	})

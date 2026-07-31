@@ -20,13 +20,13 @@ type Adapter struct {
 	client *goredis.Client
 }
 
-func New(cfg Config) Adapter {
+func New(ctx context.Context, cfg Config) Adapter {
 	client := goredis.NewClient(&goredis.Options{
 		Addr: net.JoinHostPort(cfg.Host, strconv.Itoa(cfg.Port)),
 		DB:   cfg.DB,
 	})
 
-	if err := client.Ping(context.Background()).Err(); err != nil {
+	if err := client.Ping(ctx).Err(); err != nil {
 		_ = client.Close()
 		panic(fmt.Errorf("redis connection failed: %w", err))
 	}

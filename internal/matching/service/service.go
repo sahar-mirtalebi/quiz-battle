@@ -5,13 +5,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
+	param "github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
 type Repo interface {
-	AddToWaitingList(ctx context.Context, userID uint, category quizdomain.Category, joinedAt time.Time) error
+	AddToWaitingList(ctx context.Context, userID uint, category quizdomain.Category) error
 }
 
 type Config struct {
@@ -30,7 +30,7 @@ func New(repo Repo, config Config) Service {
 }
 
 func (s Service) AddToWaitingList(ctx context.Context, req param.AddToWaitingListRequest) (param.AddToWaitingListResponse, error) {
-	err := s.repo.AddToWaitingList(ctx, req.UserID, req.Category, time.Now())
+	err := s.repo.AddToWaitingList(ctx, req.UserID, req.Category)
 	if err != nil {
 		return param.AddToWaitingListResponse{}, richerror.New().WithError(err)
 	}

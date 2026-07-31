@@ -10,12 +10,14 @@ import (
 )
 
 func (h Handler) userProfile(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	userID, err := middleware.UserID(c)
 	if err != nil {
 		return err
 	}
 
-	resp, err := h.userSvc.Profile(param.ProfileRequest{UserID: userID})
+	resp, err := h.userSvc.Profile(ctx, param.ProfileRequest{UserID: userID})
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return echo.NewHTTPError(code, msg)

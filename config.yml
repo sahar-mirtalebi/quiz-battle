@@ -21,4 +21,4 @@ redis:
   db: 0
 
 matching_service:
-  waiting_timeout: 30s
+  waiting_timeout: 2m

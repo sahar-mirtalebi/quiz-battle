@@ -2,6 +2,7 @@
 package migrator
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -30,28 +31,28 @@ func New(conf mysql.Config) Migrator {
 // TODO - set migration table name
 // TODO - add limit to up and down method
 
-func (m Migrator) Up() {
+func (m Migrator) Up(ctx context.Context) {
 	db, err := sql.Open(m.Dialect, fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", m.Config.Username, m.Config.Password, m.Config.Host, m.Config.Port, m.Config.DBName))
 	if err != nil {
 		panic(fmt.Errorf("mysql open err: %v", err))
 	}
 	defer db.Close()
 
-	n, err := migrate.Exec(db, m.Dialect, m.Migrations, migrate.Up)
+	n, err := migrate.ExecContext(ctx, db, m.Dialect, m.Migrations, migrate.Up)
 	if err != nil {
 		panic(fmt.Errorf("cant apply migration: %v", err))
 	}
 	fmt.Printf("Applied %d migrations!\n", n)
 }
 
-func (m Migrator) Down() {
+func (m Migrator) Down(ctx context.Context) {
 	db, err := sql.Open(m.Dialect, fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", m.Config.Username, m.Config.Password, m.Config.Host, m.Config.Port, m.Config.DBName))
 	if err != nil {
 		panic(fmt.Errorf("mysql open err: %v", err))
 	}
 	defer db.Close()
 
-	n, err := migrate.Exec(db, m.Dialect, m.Migrations, migrate.Down)
+	n, err := migrate.ExecContext(ctx, db, m.Dialect, m.Migrations, migrate.Down)
 	if err != nil {
 		panic(fmt.Errorf("cant rollback migration: %v", err))
 	}

@@ -2,11 +2,17 @@
 package config
 
 import (
+	"time"
+
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/mysql"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/token"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
+	authservice "github.com/sahar-mirtalebi/quiz-battle/internal/auth/token"
+	matchingservice "github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
 )
+
+type Application struct {
+	GracefullShutdownTimeout time.Duration `koanf:"gracefull_shutdown_timeout"`
+}
 
 type HTTPConfig struct {
 	Port int `koanf:"port"`
@@ -18,4 +24,5 @@ type Config struct {
 	Mysql           mysql.Config           `koanf:"mysql"`
 	Redis           redis.Config           `koanf:"redis"`
 	MatchingService matchingservice.Config `koanf:"matching_service"`
+	Application     Application            `koanf:"application"`
 }

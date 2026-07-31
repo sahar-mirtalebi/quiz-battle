@@ -8,7 +8,7 @@ import (
 )
 
 func (h Handler) listAllUsers(c echo.Context) error {
-	resp, err := h.backofficeUserSvc.ListAllUsers()
+	resp, err := h.backofficeUserSvc.ListAllUsers(c.Request().Context())
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return echo.NewHTTPError(code, msg)

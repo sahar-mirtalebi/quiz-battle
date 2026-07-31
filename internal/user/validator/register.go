@@ -1,6 +1,7 @@
 package uservalidator
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/user/dto"
 )
 
-func (v Validator) ValidateRegisterRequest(req param.RegisterRequest) (map[string]string, error) {
+func (v Validator) ValidateRegisterRequest(ctx context.Context, req param.RegisterRequest) (map[string]string, error) {
 	// TODO - we should verify phone number by verification code
 
 	if err := validation.ValidateStruct(&req,
@@ -20,7 +21,9 @@ func (v Validator) ValidateRegisterRequest(req param.RegisterRequest) (map[strin
 
 		validation.Field(&req.PhoneNumber, validation.Required,
 			validation.Match(regexp.MustCompile(phoneNumberRegex)).Error(errormessage.ErrorMsgPhoneNumberIsNotValid),
-			validation.By(v.checkPhoneNumberUniqueness),
+			validation.By(func(value interface{}) error {
+				return v.checkPhoneNumberUniqueness(ctx, value)
+			}),
 		),
 	); err != nil {
 		fieldError := map[string]string{}
@@ -45,9 +48,9 @@ func (v Validator) ValidateRegisterRequest(req param.RegisterRequest) (map[strin
 
 }
 
-func (v Validator) checkPhoneNumberUniqueness(value interface{}) error {
+func (v Validator) checkPhoneNumberUniqueness(ctx context.Context, value interface{}) error {
 	phoneNumber := value.(string)
-	if isUnique, err := v.Repo.IsPhoneNumberUnique(phoneNumber); err != nil || !isUnique {
+	if isUnique, err := v.Repo.IsPhoneNumberUnique(ctx, phoneNumber); err != nil || !isUnique {
 		if err != nil {
 			return err
 		}

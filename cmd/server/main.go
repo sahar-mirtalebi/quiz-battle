@@ -2,43 +2,65 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"time"
+
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/mysql"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/mysql/migrator"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/repository/mysql"
+	accesscontrolrepo "github.com/sahar-mirtalebi/quiz-battle/internal/auth/repository/mysql"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/config"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/repository/redis"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/server"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/user/repository/mysql"
+	matchingrepo "github.com/sahar-mirtalebi/quiz-battle/internal/matching/repository/redis"
+	httpserver "github.com/sahar-mirtalebi/quiz-battle/internal/server"
+	userrepo "github.com/sahar-mirtalebi/quiz-battle/internal/user/repository/mysql"
 
-	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/authorization"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/token"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/validator"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/user/backoffice/service"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/user/service"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/user/validator"
+	authorizationservice "github.com/sahar-mirtalebi/quiz-battle/internal/auth/authorization"
+	authservice "github.com/sahar-mirtalebi/quiz-battle/internal/auth/token"
+	matchingservice "github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
+	matchingvalidator "github.com/sahar-mirtalebi/quiz-battle/internal/matching/validator"
+	backofficeuserservice "github.com/sahar-mirtalebi/quiz-battle/internal/user/backoffice/service"
+	userservice "github.com/sahar-mirtalebi/quiz-battle/internal/user/service"
+	uservalidator "github.com/sahar-mirtalebi/quiz-battle/internal/user/validator"
 )
 
 func main() {
 	cfg := config.Load("config.yml")
+	startupCtx, cancelStartup := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelStartup()
 
 	// TODO - add command for migration
 	migrator := migrator.New(cfg.Mysql)
-	migrator.Up()
+	migrator.Up(startupCtx)
 
-	userSvc, backofficeUserSvc, authzSvc, userValidator, matchingValidator, matchingService := setupServices(*cfg)
+	userSvc, backofficeUserSvc, authzSvc, userValidator, matchingValidator, matchingService := setupServices(startupCtx, *cfg)
 
 	server := httpserver.New(*cfg, userSvc, backofficeUserSvc, authzSvc, userValidator, matchingService, matchingValidator)
 
 	server.Serve()
 
+	sigchan := make(chan os.Signal, 1)
+	signal.Notify(sigchan, os.Interrupt)
+	<-sigchan
+	fmt.Println("recieved interrupt signal, sutting down gracefully...")
+
+	shutDownCtx, cancel := context.WithTimeout(
+		context.Background(),
+		cfg.Application.GracefullShutdownTimeout,
+	)
+	defer cancel()
+
+	if err := server.Router.Shutdown(shutDownCtx); err != nil {
+		fmt.Println("http server shutdown error", err)
+	}
 }
 
-func setupServices(cfg config.Config) (userservice.Service, backofficeuserservice.Service, authorizationservice.Service, uservalidator.Validator, matchingvalidator.Validator, matchingservice.Service) {
+func setupServices(ctx context.Context, cfg config.Config) (userservice.Service, backofficeuserservice.Service, authorizationservice.Service, uservalidator.Validator, matchingvalidator.Validator, matchingservice.Service) {
 	authSvc := authservice.New(cfg.JWT)
 
-	db := mysql.New(cfg.Mysql)
+	db := mysql.New(ctx, cfg.Mysql)
 
 	userRepo := userrepo.New(db)
 	userValidator := uservalidator.New(userRepo)
@@ -49,7 +71,7 @@ func setupServices(cfg config.Config) (userservice.Service, backofficeuserservic
 
 	backofficeUserSvc := backofficeuserservice.New(userRepo)
 
-	cache := redis.New(cfg.Redis)
+	cache := redis.New(ctx, cfg.Redis)
 
 	matchingRepo := matchingrepo.New(cache)
 	matchingValidator := matchingvalidator.New()

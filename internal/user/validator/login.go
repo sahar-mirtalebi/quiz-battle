@@ -1,6 +1,7 @@
 package uservalidator
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 
@@ -10,13 +11,15 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/user/dto"
 )
 
-func (v Validator) ValidateLoginRequest(req param.LoginRequest) (map[string]string, error) {
+func (v Validator) ValidateLoginRequest(ctx context.Context, req param.LoginRequest) (map[string]string, error) {
 	// TODO - we should verify phone number by verification code
 	if err := validation.ValidateStruct(&req,
 		validation.Field(&req.Password, validation.Required),
 		validation.Field(&req.PhoneNumber, validation.Required,
 			validation.Match(regexp.MustCompile(phoneNumberRegex)).Error(errormessage.ErrorMsgPhoneNumberIsNotValid),
-			validation.By(v.doesPhoneNumberExist),
+			validation.By(func(value interface{}) error {
+				return v.doesPhoneNumberExist(ctx, value)
+			}),
 		),
 	); err != nil {
 		fieldError := map[string]string{}
@@ -41,9 +44,9 @@ func (v Validator) ValidateLoginRequest(req param.LoginRequest) (map[string]stri
 
 }
 
-func (v Validator) doesPhoneNumberExist(value interface{}) error {
+func (v Validator) doesPhoneNumberExist(ctx context.Context, value interface{}) error {
 	phoneNumber := value.(string)
-	_, err := v.Repo.GetUserByPhoneNumber(phoneNumber)
+	_, err := v.Repo.GetUserByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
 		return fmt.Errorf("%s", errormessage.ErrorMsgNotFound)
 	}
