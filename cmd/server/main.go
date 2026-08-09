@@ -57,7 +57,13 @@ func main() {
 	}
 }
 
-func setupServices(ctx context.Context, cfg config.Config) (userservice.Service, backofficeuserservice.Service, authorizationservice.Service, uservalidator.Validator, matchingvalidator.Validator, matchingservice.Service) {
+func setupServices(ctx context.Context, cfg config.Config) (
+	userservice.Service,
+	backofficeuserservice.Service,
+	authorizationservice.Service,
+	uservalidator.Validator,
+	matchingvalidator.Validator,
+	matchingservice.Service) {
 	authSvc := authservice.New(cfg.JWT)
 
 	db := mysql.New(ctx, cfg.Mysql)

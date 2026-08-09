@@ -14,6 +14,10 @@ type Application struct {
 	GracefullShutdownTimeout time.Duration `koanf:"gracefull_shutdown_timeout"`
 }
 
+type Scheduler struct {
+	MatchPlayersInterval time.Duration `koanf:"match_players_interval"`
+}
+
 type HTTPConfig struct {
 	Port int `koanf:"port"`
 }
@@ -25,4 +29,5 @@ type Config struct {
 	Redis           redis.Config           `koanf:"redis"`
 	MatchingService matchingservice.Config `koanf:"matching_service"`
 	Application     Application            `koanf:"application"`
+	Scheduler       Scheduler              `koanf:"scheduler"`
 }

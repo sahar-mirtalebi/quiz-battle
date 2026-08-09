@@ -22,3 +22,6 @@ redis:
 
 matching_service:
   waiting_timeout: 2m
+
+scheduler:
+  match_players_interval: 3s

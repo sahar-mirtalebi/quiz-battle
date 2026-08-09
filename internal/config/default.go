@@ -16,4 +16,5 @@ var defaultConfig = map[string]any{
 	"redis.db":                               0,
 	"matching_service.waiting_timeout":       "30s",
 	"application.gracefull_shutdown_timeout": time.Second * 5,
+	"scheduler.match_players_interval":       time.Second * 3,
 }

@@ -2,43 +2,59 @@ package scheduler
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log"
 	"time"
+
+	"github.com/go-co-op/gocron/v2"
 )
 
+type MatchingService interface {
+	MatchPlayers(ctx context.Context) error
+}
+
 type Scheduler struct {
+	scheduler       gocron.Scheduler
+	matchingService MatchingService
 }
 
-func New() Scheduler {
-	return Scheduler{}
-}
-
-func (s Scheduler) Start(ctx context.Context) {
-	ticker := time.NewTicker(3 * time.Second)
-	defer ticker.Stop()
-
-	fmt.Println("start")
-
-	for {
-		select {
-		case <-ctx.Done():
-			fmt.Println("scheduler stopped")
-			return
-		case <-ticker.C:
-			if err := s.runJob(ctx); err != nil {
-				if errors.Is(err, context.Canceled) {
-					return
-				}
-
-				log.Println("job failed:", err)
-			}
-		}
-
+func New(matchingService MatchingService, interval time.Duration) (*Scheduler, error) {
+	cronScheduler, err := gocron.NewScheduler()
+	if err != nil {
+		return nil, err
 	}
+
+	s := &Scheduler{
+		scheduler:       cronScheduler,
+		matchingService: matchingService,
+	}
+
+	if err := s.registerJobs(interval); err != nil {
+		_ = cronScheduler.Shutdown()
+		return nil, err
+	}
+
+	return s, nil
 }
 
-func (s Scheduler) runJob(ctx context.Context) error {
-	return nil
+func (s *Scheduler) registerJobs(interval time.Duration) error {
+	_, err := s.scheduler.NewJob(
+		gocron.DurationJob(interval),
+		gocron.NewTask(func(ctx context.Context) {
+			if err := s.matchingService.MatchPlayers(ctx); err != nil {
+				log.Printf("match players job failed: %v", err)
+			}
+		}),
+		gocron.WithName("match-players"),
+		gocron.WithSingletonMode(gocron.LimitModeReschedule),
+	)
+
+	return err
+}
+
+func (s *Scheduler) Start() {
+	s.scheduler.Start()
+}
+
+func (s *Scheduler) Shutdown(ctx context.Context) error {
+	return s.scheduler.ShutdownWithContext(ctx)
 }
