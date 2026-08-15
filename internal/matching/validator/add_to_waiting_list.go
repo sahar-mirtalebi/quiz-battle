@@ -1,4 +1,4 @@
-package matchingvalidator
+package validator
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
-func (v Validator) ValidateAddToWaitingListRequest(req param.AddToWaitingListRequest) (map[string]string, error) {
+func (v Validator) ValidateAddToWaitingListInput(req dto.AddToWaitingListInput) (map[string]string, error) {
 	// TODO - we should verify phone number by verification code
 
 	if err := validation.ValidateStruct(&req,

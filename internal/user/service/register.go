@@ -1,4 +1,4 @@
-package userservice
+package service
 
 import (
 	"context"
@@ -9,11 +9,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s Service) Register(ctx context.Context, req param.RegisterRequest) (param.RegisterResponse, error) {
+func (s Service) Register(ctx context.Context, req dto.RegisterInput) (dto.RegisterOutput, error) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return param.RegisterResponse{}, fmt.Errorf("error hashing the password")
+		return dto.RegisterOutput{}, fmt.Errorf("error hashing the password")
 	}
 
 	user := userdomain.User{
@@ -25,11 +25,11 @@ func (s Service) Register(ctx context.Context, req param.RegisterRequest) (param
 
 	createdUser, err := s.Repo.Register(ctx, user)
 	if err != nil {
-		return param.RegisterResponse{}, fmt.Errorf("unexpected error: %w", err)
+		return dto.RegisterOutput{}, fmt.Errorf("unexpected error: %w", err)
 	}
 
-	resp := param.RegisterResponse{
-		User: param.UserInfo{
+	resp := dto.RegisterOutput{
+		User: dto.UserInfo{
 			ID:          createdUser.ID,
 			Name:        createdUser.Name,
 			PhoneNumber: createdUser.PhoneNumber,

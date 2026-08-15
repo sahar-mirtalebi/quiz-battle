@@ -1,11 +1,11 @@
-package matchingservice
+package service
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	param "github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
+	dto "github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 )
 
@@ -25,7 +25,7 @@ func TestAddToWaitingList(t *testing.T) {
 	waitingTimeout := 30 * time.Second
 	service := New(repo, Config{WaitingTimeout: waitingTimeout})
 
-	response, err := service.AddToWaitingList(context.Background(), param.AddToWaitingListRequest{
+	response, err := service.AddToWaitingList(context.Background(), dto.AddToWaitingListInput{
 		UserID:   42,
 		Category: quizdomain.FootballCategory,
 	})

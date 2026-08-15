@@ -1,11 +1,11 @@
-// Package matchingservice contains matchmaking use cases.
-package matchingservice
+// Package service contains matchmaking use cases.
+package service
 
 import (
 	"context"
 	"time"
 
-	param "github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
+	dto "github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
@@ -29,11 +29,11 @@ func New(repo Repo, config Config) Service {
 	}
 }
 
-func (s Service) AddToWaitingList(ctx context.Context, req param.AddToWaitingListRequest) (param.AddToWaitingListResponse, error) {
+func (s Service) AddToWaitingList(ctx context.Context, req dto.AddToWaitingListInput) (dto.AddToWaitingListOutput, error) {
 	err := s.repo.AddToWaitingList(ctx, req.UserID, req.Category)
 	if err != nil {
-		return param.AddToWaitingListResponse{}, richerror.New().WithError(err)
+		return dto.AddToWaitingListOutput{}, richerror.New().WithError(err)
 	}
 
-	return param.AddToWaitingListResponse{Timeout: s.config.WaitingTimeout}, nil
+	return dto.AddToWaitingListOutput{Timeout: s.config.WaitingTimeout}, nil
 }

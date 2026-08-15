@@ -1,4 +1,4 @@
-package userhandler
+package handler
 
 import (
 	"net/http"
@@ -12,13 +12,13 @@ import (
 func (h Handler) userRegister(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	var req param.RegisterRequest
+	var req dto.RegisterInput
 	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	fieldError, err := h.userValidator.ValidateRegisterRequest(ctx, req)
+	fieldError, err := h.userValidator.ValidateRegisterInput(ctx, req)
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return c.JSON(code, echo.Map{

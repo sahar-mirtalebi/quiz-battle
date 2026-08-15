@@ -1,6 +1,6 @@
-package param
+package dto
 
-type RegisterRequest struct {
+type RegisterInput struct {
 	Name        string `json:"name"`
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
@@ -12,6 +12,6 @@ type UserInfo struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
-type RegisterResponse struct {
+type RegisterOutput struct {
 	User UserInfo `json:"user"`
 }

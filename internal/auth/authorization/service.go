@@ -1,5 +1,5 @@
-// Package authorizationservice evaluates user permissions.
-package authorizationservice
+// Package authorization evaluates user permissions.
+package authorization
 
 import (
 	"context"

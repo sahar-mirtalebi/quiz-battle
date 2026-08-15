@@ -1,5 +1,5 @@
-// Package userservice contains user application use cases.
-package userservice
+// Package service contains user application use cases.
+package service
 
 import (
 	"context"

@@ -1,5 +1,4 @@
-// Package matchingrepo stores matchmaking queues in Redis.
-package matchingrepo
+package redis
 
 import (
 	redisadapter "github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"

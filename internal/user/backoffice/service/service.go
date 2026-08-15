@@ -1,5 +1,5 @@
-// Package backofficeuserservice contains administrative user use cases.
-package backofficeuserservice
+// Package service contains administrative user use cases.
+package service
 
 import (
 	"context"

@@ -1,5 +1,5 @@
-// Package uservalidator validates user requests.
-package uservalidator
+// Package validator validates user requests.
+package validator
 
 import (
 	"context"

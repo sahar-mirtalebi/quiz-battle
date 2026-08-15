@@ -1,9 +1,9 @@
-// Package userhandler exposes the user HTTP endpoints.
-package userhandler
+// Package handler exposes the user HTTP endpoints.
+package handler
 
 import (
-	"github.com/sahar-mirtalebi/quiz-battle/internal/user/service"
-	"github.com/sahar-mirtalebi/quiz-battle/internal/user/validator"
+	userservice "github.com/sahar-mirtalebi/quiz-battle/internal/user/service"
+	uservalidator "github.com/sahar-mirtalebi/quiz-battle/internal/user/validator"
 )
 
 type Handler struct {

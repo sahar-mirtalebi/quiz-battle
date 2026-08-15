@@ -1,5 +1,5 @@
-// Package httpserver wires and runs the HTTP transport.
-package httpserver
+// Package server wires and runs the HTTP transport.
+package server
 
 import (
 	"fmt"

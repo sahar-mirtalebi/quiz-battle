@@ -1,5 +1,5 @@
-// Package matchingvalidator validates matchmaking requests.
-package matchingvalidator
+// Package validator validates matchmaking requests.
+package validator
 
 type Validator struct {
 }

@@ -1,5 +1,5 @@
-// Package accesscontrolrepo stores access-control rules in MySQL.
-package accesscontrolrepo
+// Package mysql stores access-control rules in MySQL.
+package mysql
 
 import "database/sql"
 

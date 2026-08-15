@@ -1,4 +1,4 @@
-package gamedomain
+package domain
 
 import (
 	"time"

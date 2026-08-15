@@ -1,4 +1,4 @@
-package userservice
+package service
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/user/dto"
 )
 
-func (s Service) Profile(ctx context.Context, req param.ProfileRequest) (param.ProfileResponse, error) {
+func (s Service) Profile(ctx context.Context, req dto.ProfileInput) (dto.ProfileOutput, error) {
 
 	user, err := s.Repo.GetUserByID(ctx, req.UserID)
 	if err != nil {
-		return param.ProfileResponse{}, richerror.New().WithError(err).WithMeta(map[string]interface{}{"req": req})
+		return dto.ProfileOutput{}, richerror.New().WithError(err).WithMeta(map[string]interface{}{"req": req})
 	}
-	return param.ProfileResponse{Name: user.Name}, nil
+	return dto.ProfileOutput{Name: user.Name}, nil
 }

@@ -1,9 +1,9 @@
-package param
+package dto
 
-type ProfileRequest struct {
+type ProfileInput struct {
 	UserID uint `json:"id"`
 }
 
-type ProfileResponse struct {
+type ProfileOutput struct {
 	Name string `json:"name"`
 }

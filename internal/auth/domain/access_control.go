@@ -1,4 +1,4 @@
-package authdomain
+package domain
 
 // access control only keeps allowed permission
 type AccessControl struct {

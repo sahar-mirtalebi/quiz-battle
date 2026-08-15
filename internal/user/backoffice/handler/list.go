@@ -1,4 +1,4 @@
-package backofficeuserhandler
+package handler
 
 import (
 	"net/http"

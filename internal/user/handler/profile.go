@@ -1,4 +1,4 @@
-package userhandler
+package handler
 
 import (
 	"net/http"
@@ -17,7 +17,7 @@ func (h Handler) userProfile(c echo.Context) error {
 		return err
 	}
 
-	resp, err := h.userSvc.Profile(ctx, param.ProfileRequest{UserID: userID})
+	resp, err := h.userSvc.Profile(ctx, dto.ProfileInput{UserID: userID})
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return echo.NewHTTPError(code, msg)

@@ -1,4 +1,4 @@
-package uservalidator
+package validator
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/user/dto"
 )
 
-func (v Validator) ValidateLoginRequest(ctx context.Context, req param.LoginRequest) (map[string]string, error) {
+func (v Validator) ValidateLoginInput(ctx context.Context, req dto.LoginInput) (map[string]string, error) {
 	// TODO - we should verify phone number by verification code
 	if err := validation.ValidateStruct(&req,
 		validation.Field(&req.Password, validation.Required),

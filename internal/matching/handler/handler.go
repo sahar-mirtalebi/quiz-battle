@@ -1,10 +1,9 @@
-// Package matchinghandler exposes matchmaking HTTP endpoints.
-package matchinghandler
+// Package handler exposes matchmaking HTTP endpoints.
+package handler
 
 import (
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
-
-	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/validator"
+	matchingservice "github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
+	matchingvalidator "github.com/sahar-mirtalebi/quiz-battle/internal/matching/validator"
 )
 
 type Handler struct {

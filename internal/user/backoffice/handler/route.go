@@ -1,4 +1,4 @@
-package backofficeuserhandler
+package handler
 
 import (
 	echojwt "github.com/labstack/echo-jwt"

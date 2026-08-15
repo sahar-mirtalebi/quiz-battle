@@ -1,8 +1,12 @@
-package matchingservice
+package service
 
-import "context"
+import (
+	"context"
 
-func (s Service) MatchPlayers(ctx context.Context) error {
+	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
+)
+
+func (s Service) MatchPlayers(ctx context.Context, req dto.MatchPlayersInput) (dto.MatchPlayersOutput, error) {
 	// TODO: implement matchmaking logic.
-	return nil
+	return dto.MatchPlayersOutput{}, nil
 }

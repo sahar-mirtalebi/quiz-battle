@@ -36,7 +36,9 @@ func main() {
 
 	cronScheduler, err := scheduler.New(
 		matchingService,
-		cfg.Scheduler.MatchPlayersInterval,
+		scheduler.Config{
+			MatchPlayersInterval: cfg.Scheduler.MatchPlayersInterval,
+		},
 	)
 	if err != nil {
 		log.Fatalf("create scheduler: %v", err)

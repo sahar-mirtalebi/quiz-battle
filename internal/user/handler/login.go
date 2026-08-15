@@ -1,4 +1,4 @@
-package userhandler
+package handler
 
 import (
 	"net/http"
@@ -12,13 +12,13 @@ import (
 func (h Handler) userLogin(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	var req param.LoginRequest
+	var req dto.LoginInput
 	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	fieldError, err := h.userValidator.ValidateLoginRequest(ctx, req)
+	fieldError, err := h.userValidator.ValidateLoginInput(ctx, req)
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return c.JSON(code, echo.Map{

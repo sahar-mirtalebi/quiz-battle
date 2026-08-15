@@ -1,5 +1,5 @@
-// Package authservice creates authentication tokens.
-package authservice
+// Package token creates authentication tokens.
+package token
 
 import (
 	"fmt"

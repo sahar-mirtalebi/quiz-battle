@@ -1,4 +1,4 @@
-package matchinghandler
+package handler
 
 import (
 	echojwt "github.com/labstack/echo-jwt"

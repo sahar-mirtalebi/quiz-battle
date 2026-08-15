@@ -1,5 +1,5 @@
-// Package userrepo stores users in MySQL.
-package userrepo
+// Package mysql stores users in MySQL.
+package mysql
 
 import (
 	"database/sql"

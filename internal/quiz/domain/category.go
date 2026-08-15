@@ -1,4 +1,4 @@
-package quizdomain
+package domain
 
 type Category string
 

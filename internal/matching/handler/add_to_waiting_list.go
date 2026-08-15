@@ -1,4 +1,4 @@
-package matchinghandler
+package handler
 
 import (
 	"net/http"
@@ -15,7 +15,7 @@ func (h Handler) addToWaitingList(c echo.Context) error {
 		return err
 	}
 
-	var req param.AddToWaitingListRequest
+	var req dto.AddToWaitingListInput
 	err = c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest)
@@ -23,7 +23,7 @@ func (h Handler) addToWaitingList(c echo.Context) error {
 
 	req.UserID = userID
 
-	fieldError, err := h.matchingValidator.ValidateAddToWaitingListRequest(req)
+	fieldError, err := h.matchingValidator.ValidateAddToWaitingListInput(req)
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
 		return c.JSON(code, echo.Map{

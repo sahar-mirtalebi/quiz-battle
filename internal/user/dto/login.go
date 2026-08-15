@@ -1,7 +1,7 @@
-// Package param contains the user transport DTOs.
-package param
+// Package dto contains the user transport DTOs.
+package dto
 
-type LoginRequest struct {
+type LoginInput struct {
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
 }
@@ -11,7 +11,7 @@ type Tokens struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type LoginResponse struct {
+type LoginOutput struct {
 	User   UserInfo `json:"user"`
 	Tokens Tokens   `json:"tokens"`
 }

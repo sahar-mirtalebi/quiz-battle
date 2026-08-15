@@ -1,4 +1,4 @@
-package authdomain
+package domain
 
 type Permission struct {
 	ID    uint

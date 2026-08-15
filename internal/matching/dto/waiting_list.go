@@ -1,5 +1,5 @@
-// Package param contains matchmaking transport DTOs.
-package param
+// Package dto contains matchmaking transport DTOs.
+package dto
 
 import (
 	"time"
@@ -7,11 +7,11 @@ import (
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 )
 
-type AddToWaitingListRequest struct {
+type AddToWaitingListInput struct {
 	UserID   uint                `json:"-"`
 	Category quizdomain.Category `json:"category"`
 }
 
-type AddToWaitingListResponse struct {
+type AddToWaitingListOutput struct {
 	Timeout time.Duration `json:"timeout"`
 }
