@@ -1,6 +1,10 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
+)
 
 type Role uint8
 
@@ -33,5 +37,5 @@ func MapStringToRole(role string) (Role, error) {
 		return AdminRole, nil
 	}
 
-	return 0, fmt.Errorf("invalid role: %s", role)
+	return 0, richerror.New().WithMessage(fmt.Sprintf("invalid role: %s", role)).WithKind(richerror.KindInvalid)
 }

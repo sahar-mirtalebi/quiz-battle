@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
 type MatchingService interface {
@@ -25,7 +26,7 @@ type Scheduler struct {
 func New(matchingService MatchingService, cfg Config) (*Scheduler, error) {
 	cronScheduler, err := gocron.NewScheduler()
 	if err != nil {
-		return nil, err
+		return nil, richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
 	s := &Scheduler{
@@ -35,7 +36,7 @@ func New(matchingService MatchingService, cfg Config) (*Scheduler, error) {
 
 	if err := s.registerJobs(cfg); err != nil {
 		_ = cronScheduler.Shutdown()
-		return nil, err
+		return nil, richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
 	return s, nil
@@ -43,7 +44,7 @@ func New(matchingService MatchingService, cfg Config) (*Scheduler, error) {
 
 func (s *Scheduler) registerJobs(cfg Config) error {
 	if err := s.registerMatchPlayersJob(cfg.MatchPlayersInterval); err != nil {
-		return err
+		return richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
 	return nil
@@ -61,7 +62,10 @@ func (s *Scheduler) registerMatchPlayersJob(interval time.Duration) error {
 		gocron.WithSingletonMode(gocron.LimitModeReschedule),
 	)
 
-	return err
+	if err != nil {
+		return richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
+	}
+	return nil
 }
 
 func (s *Scheduler) Start() {
@@ -69,5 +73,8 @@ func (s *Scheduler) Start() {
 }
 
 func (s *Scheduler) Shutdown(ctx context.Context) error {
-	return s.scheduler.ShutdownWithContext(ctx)
+	if err := s.scheduler.ShutdownWithContext(ctx); err != nil {
+		return richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
+	}
+	return nil
 }

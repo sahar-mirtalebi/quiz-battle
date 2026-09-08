@@ -1,8 +1,6 @@
 package validator
 
 import (
-	"fmt"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
@@ -44,7 +42,7 @@ func (v Validator) isCategoryValid(value interface{}) error {
 	category := value.(quizdomain.Category)
 
 	if !category.IsValid() {
-		return fmt.Errorf("%s", errormessage.ErrorMsgCategoryIsNotValid)
+		return richerror.New().WithMessage(errormessage.ErrorMsgCategoryIsNotValid).WithKind(richerror.KindInvalid)
 	}
 
 	return nil

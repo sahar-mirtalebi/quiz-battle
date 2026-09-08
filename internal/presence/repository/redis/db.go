@@ -1,13 +1,13 @@
 package redis
 
 import (
-	redisadapter "github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"
+	redis "github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"
 )
 
-type MatchingDB struct {
-	Adapter redisadapter.Adapter
+type DB struct {
+	Adapter redis.Adapter
 }
 
-func New(adapter redisadapter.Adapter) *MatchingDB {
-	return &MatchingDB{Adapter: adapter}
+func New(adapter redis.Adapter) *DB {
+	return &DB{Adapter: adapter}
 }

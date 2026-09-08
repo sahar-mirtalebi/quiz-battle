@@ -3,11 +3,11 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"strconv"
 
 	goredis "github.com/redis/go-redis/v9"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
 type Config struct {
@@ -28,7 +28,7 @@ func New(ctx context.Context, cfg Config) Adapter {
 
 	if err := client.Ping(ctx).Err(); err != nil {
 		_ = client.Close()
-		panic(fmt.Errorf("redis connection failed: %w", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("redis connection failed"))
 	}
 
 	return Adapter{
@@ -41,5 +41,8 @@ func (a Adapter) Client() goredis.Cmdable {
 }
 
 func (a Adapter) Close() error {
-	return a.client.Close()
+	if err := a.client.Close(); err != nil {
+		return richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
+	}
+	return nil
 }

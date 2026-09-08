@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/user/dto"
@@ -19,17 +18,17 @@ func (s Service) Login(ctx context.Context, req dto.LoginInput) (dto.LoginOutput
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(req.Password))
 	if err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("phone number or password is not correct")
+		return dto.LoginOutput{}, richerror.New().WithError(err).WithMessage("phone number or password is not correct").WithKind(richerror.KindInvalid)
 	}
 
 	accessToken, err := s.Auth.CreateAccessToken(user.ID, user.Role)
 	if err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("unexpected error: %w", err)
+		return dto.LoginOutput{}, richerror.New().WithError(err)
 	}
 
 	refreshToken, err := s.Auth.CreateRefreshToken(user.ID, user.Role)
 	if err != nil {
-		return dto.LoginOutput{}, fmt.Errorf("unexpected error: %w", err)
+		return dto.LoginOutput{}, richerror.New().WithError(err)
 	}
 
 	return dto.LoginOutput{

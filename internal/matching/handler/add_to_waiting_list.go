@@ -7,6 +7,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/middleware"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/httpmessage"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
 func (h Handler) addToWaitingList(c echo.Context) error {
@@ -18,7 +19,7 @@ func (h Handler) addToWaitingList(c echo.Context) error {
 	var req dto.AddToWaitingListInput
 	err = c.Bind(&req)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest)
+		return echo.NewHTTPError(http.StatusBadRequest).SetInternal(richerror.New().WithError(err).WithKind(richerror.KindInvalid))
 	}
 
 	req.UserID = userID
@@ -35,7 +36,7 @@ func (h Handler) addToWaitingList(c echo.Context) error {
 	resp, err := h.matchingSvc.AddToWaitingList(c.Request().Context(), req)
 	if err != nil {
 		msg, code := httpmessage.ErrorCodeAndMsg(err)
-		return echo.NewHTTPError(code, msg)
+		return echo.NewHTTPError(code, msg).SetInternal(richerror.New().WithError(err))
 	}
 
 	return c.JSON(http.StatusOK, resp)

@@ -4,6 +4,7 @@ package service
 import (
 	"context"
 
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
@@ -30,7 +31,7 @@ func New(repo Repository, auth AuthService) Service {
 func (s Service) GetUserRole(ctx context.Context, userID uint) (userdomain.Role, error) {
 	user, err := s.Repo.GetUserByID(ctx, userID)
 	if err != nil {
-		return 0, err
+		return 0, richerror.New().WithError(err)
 	}
 
 	return user.Role, nil

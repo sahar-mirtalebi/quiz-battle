@@ -2,7 +2,6 @@ package validator
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -48,7 +47,7 @@ func (v Validator) doesPhoneNumberExist(ctx context.Context, value interface{}) 
 	phoneNumber := value.(string)
 	_, err := v.Repo.GetUserByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
-		return fmt.Errorf("%s", errormessage.ErrorMsgNotFound)
+		return richerror.New().WithMessage(errormessage.ErrorMsgNotFound).WithKind(richerror.KindInvalid).WithError(err)
 	}
 
 	return nil

@@ -4,6 +4,7 @@ package service
 import (
 	"context"
 
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
@@ -20,5 +21,9 @@ func New(repo Repository) Service {
 }
 
 func (s Service) ListAllUsers(ctx context.Context) ([]userdomain.User, error) {
-	return s.repo.ListAll(ctx)
+	users, err := s.repo.ListAll(ctx)
+	if err != nil {
+		return nil, richerror.New().WithError(err)
+	}
+	return users, nil
 }

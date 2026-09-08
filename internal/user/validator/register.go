@@ -2,7 +2,6 @@ package validator
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -52,11 +51,11 @@ func (v Validator) checkPhoneNumberUniqueness(ctx context.Context, value interfa
 	phoneNumber := value.(string)
 	if isUnique, err := v.Repo.IsPhoneNumberUnique(ctx, phoneNumber); err != nil || !isUnique {
 		if err != nil {
-			return err
+			return richerror.New().WithError(err)
 		}
 
 		if !isUnique {
-			return fmt.Errorf("%s", errormessage.ErrorMsgPhoneNumberIsNotUnique)
+			return richerror.New().WithMessage(errormessage.ErrorMsgPhoneNumberIsNotUnique).WithKind(richerror.KindInvalid)
 		}
 	}
 

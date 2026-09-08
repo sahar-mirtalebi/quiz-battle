@@ -8,6 +8,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"
 	authservice "github.com/sahar-mirtalebi/quiz-battle/internal/auth/token"
 	matchingservice "github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
+	presenceservice "github.com/sahar-mirtalebi/quiz-battle/internal/presence/service"
 )
 
 type Application struct {
@@ -30,4 +31,5 @@ type Config struct {
 	MatchingService matchingservice.Config `koanf:"matching_service"`
 	Application     Application            `koanf:"application"`
 	Scheduler       Scheduler              `koanf:"scheduler"`
+	PresenceService presenceservice.Config `koanf:"presence_service"`
 }

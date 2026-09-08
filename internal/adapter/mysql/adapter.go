@@ -8,6 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
 type Config struct {
@@ -21,7 +22,7 @@ type Config struct {
 func New(ctx context.Context, cfg Config) *sql.DB {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName))
 	if err != nil {
-		panic(fmt.Errorf("mysql open err: %v", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("mysql open err"))
 	}
 
 	db.SetConnMaxLifetime(time.Minute * 3)
@@ -30,7 +31,7 @@ func New(ctx context.Context, cfg Config) *sql.DB {
 
 	if err := db.PingContext(ctx); err != nil {
 		_ = db.Close()
-		panic(fmt.Errorf("mysql connection failed: %w", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("mysql connection failed"))
 	}
 	return db
 }

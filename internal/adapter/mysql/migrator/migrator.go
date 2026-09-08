@@ -8,6 +8,7 @@ import (
 
 	migrate "github.com/rubenv/sql-migrate"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/mysql"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
 
 type Migrator struct {
@@ -34,13 +35,13 @@ func New(conf mysql.Config) Migrator {
 func (m Migrator) Up(ctx context.Context) {
 	db, err := sql.Open(m.Dialect, fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", m.Config.Username, m.Config.Password, m.Config.Host, m.Config.Port, m.Config.DBName))
 	if err != nil {
-		panic(fmt.Errorf("mysql open err: %v", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("mysql open err"))
 	}
 	defer db.Close()
 
 	n, err := migrate.ExecContext(ctx, db, m.Dialect, m.Migrations, migrate.Up)
 	if err != nil {
-		panic(fmt.Errorf("cant apply migration: %v", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("cant apply migration"))
 	}
 	fmt.Printf("Applied %d migrations!\n", n)
 }
@@ -48,13 +49,13 @@ func (m Migrator) Up(ctx context.Context) {
 func (m Migrator) Down(ctx context.Context) {
 	db, err := sql.Open(m.Dialect, fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true", m.Config.Username, m.Config.Password, m.Config.Host, m.Config.Port, m.Config.DBName))
 	if err != nil {
-		panic(fmt.Errorf("mysql open err: %v", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("mysql open err"))
 	}
 	defer db.Close()
 
 	n, err := migrate.ExecContext(ctx, db, m.Dialect, m.Migrations, migrate.Down)
 	if err != nil {
-		panic(fmt.Errorf("cant rollback migration: %v", err))
+		panic(richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("cant rollback migration"))
 	}
 	fmt.Printf("Rollbacked %d migrations!\n", n)
 }

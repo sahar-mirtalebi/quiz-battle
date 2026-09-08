@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/errormessage"
@@ -18,7 +19,7 @@ func (d *UserDB) IsPhoneNumberUnique(ctx context.Context, phoneNumber string) (b
 	WHERE phone_number= ?`, phoneNumber)
 	_, err := scanUser(row)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return true, nil
 		}
 
@@ -93,7 +94,7 @@ func (d *UserDB) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (
 
 	user, err := scanUser(row)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return userdomain.User{}, richerror.New().
 				WithError(err).
 				WithMessage(errormessage.ErrorMsgNotFound).
@@ -121,7 +122,7 @@ func (d *UserDB) GetUserByID(ctx context.Context, userID uint) (userdomain.User,
 `, userID)
 	user, err := scanUser(row)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return userdomain.User{}, richerror.New().
 				WithError(err).
 				WithMessage(errormessage.ErrorMsgNotFound).
@@ -158,10 +159,12 @@ func scanUser(row scanner) (userdomain.User, error) {
 		&role,
 	)
 	if err != nil {
-		return user, err
+		return user, richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
 	user.Role, err = userdomain.MapStringToRole(role)
-
-	return user, err
+	if err != nil {
+		return user, richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
+	}
+	return user, nil
 }

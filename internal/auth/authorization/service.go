@@ -5,6 +5,7 @@ import (
 	"context"
 
 	authdomain "github.com/sahar-mirtalebi/quiz-battle/internal/auth/domain"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
@@ -25,7 +26,7 @@ func New(accessControlRepo AccessControlRepository) Service {
 func (s Service) CheckAccess(ctx context.Context, userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error) {
 	userPermissions, err := s.accessControlRepo.GetUserPermissions(ctx, userID, role)
 	if err != nil {
-		return false, err
+		return false, richerror.New().WithError(err)
 	}
 
 	granted := make(map[authdomain.PermissionTitle]bool, len(userPermissions))

@@ -2,10 +2,10 @@
 package token
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 )
 
@@ -58,7 +58,7 @@ func (s Service) CreateToken(userID uint, role userdomain.Role, expirationTime t
 
 	tokenString, err := token.SignedString([]byte(s.Config.SignKey))
 	if err != nil {
-		return "", fmt.Errorf("unexpected error %w", err)
+		return "", richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
 	return tokenString, nil

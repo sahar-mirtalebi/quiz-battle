@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/user/dto"
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +13,7 @@ func (s Service) Register(ctx context.Context, req dto.RegisterInput) (dto.Regis
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return dto.RegisterOutput{}, fmt.Errorf("error hashing the password")
+		return dto.RegisterOutput{}, richerror.New().WithError(err).WithKind(richerror.KindUnexpected).WithMessage("error hashing the password")
 	}
 
 	user := userdomain.User{
@@ -25,7 +25,7 @@ func (s Service) Register(ctx context.Context, req dto.RegisterInput) (dto.Regis
 
 	createdUser, err := s.Repo.Register(ctx, user)
 	if err != nil {
-		return dto.RegisterOutput{}, fmt.Errorf("unexpected error: %w", err)
+		return dto.RegisterOutput{}, richerror.New().WithError(err)
 	}
 
 	resp := dto.RegisterOutput{
