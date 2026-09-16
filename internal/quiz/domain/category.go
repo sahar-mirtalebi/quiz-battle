@@ -3,13 +3,32 @@ package domain
 type Category string
 
 const (
-	FootballCategory = "football"
+	FootballCategory   = "football"
+	BasketballCategory = "basketball"
+	CinemaCategory     = "cinema"
+	MusicCategory      = "music"
+	HistoryCategory    = "history"
+	GeographyCategory  = "geography"
+	ScienceCategory    = "science"
 )
 
+func AllCategories() []Category {
+	return []Category{
+		FootballCategory,
+		BasketballCategory,
+		CinemaCategory,
+		MusicCategory,
+		HistoryCategory,
+		GeographyCategory,
+		ScienceCategory,
+	}
+}
+
 func (c Category) IsValid() bool {
-	switch c {
-	case FootballCategory:
-		return true
+	for _, category := range AllCategories() {
+		if c == category {
+			return true
+		}
 	}
 
 	return false

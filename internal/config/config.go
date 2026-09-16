@@ -7,6 +7,7 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/mysql"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/adapter/redis"
 	authservice "github.com/sahar-mirtalebi/quiz-battle/internal/auth/token"
+	matchingrepo "github.com/sahar-mirtalebi/quiz-battle/internal/matching/repository/redis"
 	matchingservice "github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
 	presenceservice "github.com/sahar-mirtalebi/quiz-battle/internal/presence/service"
 )
@@ -24,12 +25,13 @@ type HTTPConfig struct {
 }
 
 type Config struct {
-	JWT             authservice.Config     `koanf:"jwt"`
-	HTTPConfig      HTTPConfig             `koanf:"http_config"`
-	Mysql           mysql.Config           `koanf:"mysql"`
-	Redis           redis.Config           `koanf:"redis"`
-	MatchingService matchingservice.Config `koanf:"matching_service"`
-	Application     Application            `koanf:"application"`
-	Scheduler       Scheduler              `koanf:"scheduler"`
-	PresenceService presenceservice.Config `koanf:"presence_service"`
+	MatchingRepository matchingrepo.Config    `koanf:"matching_repository"`
+	JWT                authservice.Config     `koanf:"jwt"`
+	HTTPConfig         HTTPConfig             `koanf:"http_config"`
+	Mysql              mysql.Config           `koanf:"mysql"`
+	Redis              redis.Config           `koanf:"redis"`
+	MatchingService    matchingservice.Config `koanf:"matching_service"`
+	Application        Application            `koanf:"application"`
+	Scheduler          Scheduler              `koanf:"scheduler"`
+	PresenceService    presenceservice.Config `koanf:"presence_service"`
 }

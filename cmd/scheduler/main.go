@@ -31,7 +31,7 @@ func main() {
 	cancelStartup()
 	defer cache.Close()
 
-	matchingRepo := matchingrepo.New(cache)
+	matchingRepo := matchingrepo.New(cache, cfg.MatchingRepository)
 	matchingService := matchingservice.New(matchingRepo, cfg.MatchingService)
 
 	cronScheduler, err := scheduler.New(

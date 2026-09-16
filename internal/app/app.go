@@ -39,7 +39,7 @@ func New(
 
 	userRepo := userrepo.New(db)
 	accessControlRepo := accesscontrolrepo.New(db)
-	matchingRepo := matchingrepo.New(cache)
+	matchingRepo := matchingrepo.New(cache, cfg.MatchingRepository)
 	presenceRepo := presencerepo.New(cache)
 
 	authService := authservice.New(cfg.JWT)

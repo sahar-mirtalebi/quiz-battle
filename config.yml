@@ -20,6 +20,9 @@ redis:
   port: 6379
   db: 0
 
+matching_repository:
+  waiting_list_prefix: waiting-list
+
 matching_service:
   waiting_timeout: 2m
 
