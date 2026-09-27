@@ -1,4 +1,4 @@
-package domain
+package category
 
 type Category string
 

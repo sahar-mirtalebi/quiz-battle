@@ -3,13 +3,14 @@ package domain
 import (
 	"time"
 
+	"github.com/sahar-mirtalebi/quiz-battle/internal/category"
 	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 )
 
 type Game struct {
 	ID          uint
 	QuestionIDs []uint
-	Category    quizdomain.Category
+	Category    category.Category
 	PlayerIDs   []uint
 	StartTime   time.Time
 }

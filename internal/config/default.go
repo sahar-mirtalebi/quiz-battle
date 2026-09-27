@@ -18,4 +18,5 @@ var defaultConfig = map[string]any{
 	"matching_service.waiting_timeout":        "30s",
 	"application.gracefull_shutdown_timeout":  time.Second * 5,
 	"scheduler.match_players_interval":        time.Second * 3,
+	"scheduler.match_players_timeout":         time.Second * 5,
 }

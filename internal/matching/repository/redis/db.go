@@ -16,3 +16,7 @@ type MatchingDB struct {
 func New(adapter redisadapter.Adapter, config Config) *MatchingDB {
 	return &MatchingDB{Adapter: adapter, config: config}
 }
+
+func (db *MatchingDB) getWaitingListKey(category string) string {
+	return db.config.WaitingListPrefix + ":" + category
+}

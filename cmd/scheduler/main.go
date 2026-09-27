@@ -13,6 +13,8 @@ import (
 	"github.com/sahar-mirtalebi/quiz-battle/internal/config"
 	matchingrepo "github.com/sahar-mirtalebi/quiz-battle/internal/matching/repository/redis"
 	matchingservice "github.com/sahar-mirtalebi/quiz-battle/internal/matching/service"
+	presencerepo "github.com/sahar-mirtalebi/quiz-battle/internal/presence/repository/redis"
+	presenceservice "github.com/sahar-mirtalebi/quiz-battle/internal/presence/service"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/scheduler"
 )
 
@@ -32,12 +34,15 @@ func main() {
 	defer cache.Close()
 
 	matchingRepo := matchingrepo.New(cache, cfg.MatchingRepository)
-	matchingService := matchingservice.New(matchingRepo, cfg.MatchingService)
+	presenceRepo := presencerepo.New(cache)
+	presenceService := presenceservice.New(cfg.PresenceService, presenceRepo)
+	matchingService := matchingservice.New(matchingRepo, presenceService, cfg.MatchingService)
 
 	cronScheduler, err := scheduler.New(
 		matchingService,
 		scheduler.Config{
 			MatchPlayersInterval: cfg.Scheduler.MatchPlayersInterval,
+			MatchPlayersTimeout:  cfg.Scheduler.MatchPlayersTimeout,
 		},
 	)
 	if err != nil {

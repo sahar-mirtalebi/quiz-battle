@@ -28,6 +28,7 @@ matching_service:
 
 scheduler:
   match_players_interval: 3s
+  match_players_timeout: 5s
 
 presence_service:
   expiration_time: 30m

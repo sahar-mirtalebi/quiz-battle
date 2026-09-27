@@ -2,8 +2,8 @@ package validator
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/category"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/matching/dto"
-	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/errormessage"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 )
@@ -39,7 +39,7 @@ func (v Validator) ValidateAddToWaitingListInput(req dto.AddToWaitingListInput) 
 }
 
 func (v Validator) isCategoryValid(value interface{}) error {
-	category := value.(quizdomain.Category)
+	category := value.(category.Category)
 
 	if !category.IsValid() {
 		return richerror.New().WithMessage(errormessage.ErrorMsgCategoryIsNotValid).WithKind(richerror.KindInvalid)

@@ -3,6 +3,7 @@ package authorization
 
 import (
 	"context"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/dto"
 
 	authdomain "github.com/sahar-mirtalebi/quiz-battle/internal/auth/domain"
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
@@ -23,10 +24,10 @@ func New(accessControlRepo AccessControlRepository) Service {
 	}
 }
 
-func (s Service) CheckAccess(ctx context.Context, userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error) {
-	userPermissions, err := s.accessControlRepo.GetUserPermissions(ctx, userID, role)
+func (s Service) CheckAccess(ctx context.Context, input dto.CheckAccessInput) (dto.CheckAccessOutput, error) {
+	userPermissions, err := s.accessControlRepo.GetUserPermissions(ctx, input.UserID, input.Role)
 	if err != nil {
-		return false, richerror.New().WithError(err)
+		return dto.CheckAccessOutput{}, richerror.New().WithError(err)
 	}
 
 	granted := make(map[authdomain.PermissionTitle]bool, len(userPermissions))
@@ -34,11 +35,11 @@ func (s Service) CheckAccess(ctx context.Context, userID uint, role userdomain.R
 		granted[permission] = true
 	}
 
-	for _, permission := range permissions {
+	for _, permission := range input.Permissions {
 		if !granted[permission] {
-			return false, nil
+			return dto.CheckAccessOutput{}, nil
 		}
 	}
 
-	return true, nil
+	return dto.CheckAccessOutput{Allowed: true}, nil
 }

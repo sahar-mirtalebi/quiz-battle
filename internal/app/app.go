@@ -46,8 +46,8 @@ func New(
 	userService := userservice.New(userRepo, authService)
 	backofficeUserService := backofficeuserservice.New(userRepo)
 	authorizationService := authorizationservice.New(accessControlRepo)
-	matchingService := matchingservice.New(matchingRepo, cfg.MatchingService)
 	presenceService := presenceservice.New(cfg.PresenceService, presenceRepo)
+	matchingService := matchingservice.New(matchingRepo, presenceService, cfg.MatchingService)
 
 	userValidator := uservalidator.New(userRepo)
 	matchingValidator := matchingvalidator.New()

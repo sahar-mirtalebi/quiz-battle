@@ -3,6 +3,7 @@ package middleware
 
 import (
 	"context"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/dto"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -13,7 +14,7 @@ import (
 )
 
 type AuthorizationService interface {
-	CheckAccess(ctx context.Context, userID uint, role userdomain.Role, permissions []authdomain.PermissionTitle) (bool, error)
+	CheckAccess(ctx context.Context, input dto.CheckAccessInput) (dto.CheckAccessOutput, error)
 }
 
 func Authorization(authzSvc AuthorizationService, permissions ...authdomain.PermissionTitle) echo.MiddlewareFunc {
@@ -39,12 +40,12 @@ func Authorization(authzSvc AuthorizationService, permissions ...authdomain.Perm
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing role").SetInternal(richerror.New().WithMessage("missing role").WithKind(richerror.KindForbiden))
 			}
 
-			allowed, err := authzSvc.CheckAccess(c.Request().Context(), uint(userIDFloat), userdomain.Role(roleFloat), permissions)
+			allowed, err := authzSvc.CheckAccess(c.Request().Context(), dto.CheckAccessInput{UserID: uint(userIDFloat), Role: userdomain.Role(roleFloat), Permissions: permissions})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(richerror.New().WithError(err).WithKind(richerror.KindUnexpected))
 			}
 
-			if !allowed {
+			if !allowed.Allowed {
 				return echo.NewHTTPError(http.StatusForbidden, "user not allowed").SetInternal(richerror.New().WithMessage("user not allowed").WithKind(richerror.KindForbiden))
 			}
 

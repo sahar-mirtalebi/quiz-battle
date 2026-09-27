@@ -16,6 +16,7 @@ type MatchingService interface {
 
 type Config struct {
 	MatchPlayersInterval time.Duration
+	MatchPlayersTimeout  time.Duration
 }
 
 type Scheduler struct {
@@ -43,17 +44,21 @@ func New(matchingService MatchingService, cfg Config) (*Scheduler, error) {
 }
 
 func (s *Scheduler) registerJobs(cfg Config) error {
-	if err := s.registerMatchPlayersJob(cfg.MatchPlayersInterval); err != nil {
+	if err := s.registerMatchPlayersJob(cfg.MatchPlayersInterval, cfg.MatchPlayersTimeout); err != nil {
 		return richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
 	return nil
 }
 
-func (s *Scheduler) registerMatchPlayersJob(interval time.Duration) error {
+func (s *Scheduler) registerMatchPlayersJob(interval, timeout time.Duration) error {
+
 	_, err := s.scheduler.NewJob(
 		gocron.DurationJob(interval),
 		gocron.NewTask(func(ctx context.Context) {
+			ctx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+
 			if _, err := s.matchingService.MatchPlayers(ctx, dto.MatchPlayersInput{}); err != nil {
 				log.Printf("match players job failed: %v", err)
 			}

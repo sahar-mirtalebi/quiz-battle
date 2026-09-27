@@ -12,6 +12,7 @@ type Config struct {
 
 type Repo interface {
 	Upsert(ctx context.Context, key string, timestamp uint64, expirationTime time.Duration) error
+	IsOnline(ctx context.Context, keys []string) (map[string]uint64, error)
 }
 
 type Service struct {

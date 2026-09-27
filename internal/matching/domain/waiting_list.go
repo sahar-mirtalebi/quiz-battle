@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	quizdomain "github.com/sahar-mirtalebi/quiz-battle/internal/quiz/domain"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/category"
 )
 
 type WaitingMember struct {
@@ -12,6 +12,6 @@ type WaitingMember struct {
 }
 
 type WaitingPair struct {
-	Category quizdomain.Category `json:"category"`
-	Members  []WaitingMember     `json:"members"`
+	Category category.Category `json:"category"`
+	Members  []WaitingMember   `json:"members"`
 }

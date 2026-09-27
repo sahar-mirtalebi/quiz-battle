@@ -18,6 +18,7 @@ type Application struct {
 
 type Scheduler struct {
 	MatchPlayersInterval time.Duration `koanf:"match_players_interval"`
+	MatchPlayersTimeout  time.Duration `koanf:"match_players_timeout"`
 }
 
 type HTTPConfig struct {

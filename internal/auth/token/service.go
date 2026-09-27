@@ -2,6 +2,7 @@
 package token
 
 import (
+	"github.com/sahar-mirtalebi/quiz-battle/internal/auth/dto"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -33,33 +34,41 @@ type Claims struct {
 	Role   userdomain.Role `json:"role"`
 }
 
-func (s Service) CreateAccessToken(userID uint, role userdomain.Role) (string, error) {
+func (s Service) CreateAccessToken(input dto.CreateAccessTokenInput) (dto.CreateAccessTokenOutput, error) {
 
-	return s.CreateToken(userID, role, s.Config.AccessExpirationTime, s.Config.AccessSubject)
+	output, err := s.CreateToken(dto.CreateTokenInput{UserID: input.UserID, Role: input.Role, ExpirationTime: s.Config.AccessExpirationTime, Subject: s.Config.AccessSubject})
+	if err != nil {
+		return dto.CreateAccessTokenOutput{}, err
+	}
+	return dto.CreateAccessTokenOutput{Token: output.Token}, nil
 }
 
-func (s Service) CreateRefreshToken(userID uint, role userdomain.Role) (string, error) {
+func (s Service) CreateRefreshToken(input dto.CreateRefreshTokenInput) (dto.CreateRefreshTokenOutput, error) {
 
-	return s.CreateToken(userID, role, s.Config.RefreshExpirationTime, s.Config.RefreshSubject)
+	output, err := s.CreateToken(dto.CreateTokenInput{UserID: input.UserID, Role: input.Role, ExpirationTime: s.Config.RefreshExpirationTime, Subject: s.Config.RefreshSubject})
+	if err != nil {
+		return dto.CreateRefreshTokenOutput{}, err
+	}
+	return dto.CreateRefreshTokenOutput{Token: output.Token}, nil
 }
 
-func (s Service) CreateToken(userID uint, role userdomain.Role, expirationTime time.Duration, subject string) (string, error) {
+func (s Service) CreateToken(input dto.CreateTokenInput) (dto.CreateTokenOutput, error) {
 	claims := &Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
-			Subject:   subject,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(input.ExpirationTime)),
+			Subject:   input.Subject,
 		},
 
-		UserID: userID,
-		Role:   role,
+		UserID: input.UserID,
+		Role:   input.Role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString([]byte(s.Config.SignKey))
 	if err != nil {
-		return "", richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
+		return dto.CreateTokenOutput{}, richerror.New().WithError(err).WithKind(richerror.KindUnexpected)
 	}
 
-	return tokenString, nil
+	return dto.CreateTokenOutput{Token: tokenString}, nil
 }

@@ -3,6 +3,7 @@ package service
 
 import (
 	"context"
+	"github.com/sahar-mirtalebi/quiz-battle/internal/user/backoffice/dto"
 
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
 	userdomain "github.com/sahar-mirtalebi/quiz-battle/internal/user/domain"
@@ -20,10 +21,10 @@ func New(repo Repository) Service {
 	return Service{repo: repo}
 }
 
-func (s Service) ListAllUsers(ctx context.Context) ([]userdomain.User, error) {
+func (s Service) ListAllUsers(ctx context.Context, input dto.ListAllUsersInput) (dto.ListAllUsersOutput, error) {
 	users, err := s.repo.ListAll(ctx)
 	if err != nil {
-		return nil, richerror.New().WithError(err)
+		return dto.ListAllUsersOutput{}, richerror.New().WithError(err)
 	}
-	return users, nil
+	return dto.ListAllUsersOutput{Users: users}, nil
 }
