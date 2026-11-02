@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	authdto "github.com/sahar-mirtalebi/quiz-battle/internal/auth/dto"
 
 	"github.com/sahar-mirtalebi/quiz-battle/internal/shared/richerror"
@@ -10,8 +11,6 @@ import (
 )
 
 func (s Service) Login(ctx context.Context, req dto.LoginInput) (dto.LoginOutput, error) {
-
-	// TODO - it would be better to use two seperate method for existance check and GetUserByPhoneNumber
 	user, err := s.Repo.GetUserByPhoneNumber(ctx, req.PhoneNumber)
 	if err != nil {
 		return dto.LoginOutput{}, richerror.New().WithError(err)
